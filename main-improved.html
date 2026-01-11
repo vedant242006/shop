@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balaji Kirana - Credit Management</title>
+    <link rel="stylesheet" href="style-improved.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo-container">
+            <i class="fas fa-store"></i>
+            <h2>Balaji Kirana</h2>
+        </div>
+        <nav class="nav-menu">
+            <a href="#" class="nav-item active" onclick="showSection('dashboard')">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('customers')">
+                <i class="fas fa-users"></i>
+                <span>Customers</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('items')">
+                <i class="fas fa-box"></i>
+                <span>Items</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('transactions')">
+                <i class="fas fa-receipt"></i>
+                <span>Transactions</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('admin')">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <i class="fas fa-moon"></i>
+                <span>Dark Mode</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="top-header">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="header-actions">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search customers..." id="globalSearch" oninput="searchCustomers()">
+                </div>
+                <button class="btn-icon" onclick="backupData()" title="Backup Data">
+                    <i class="fas fa-download"></i>
+                </button>
+                <div class="user-profile">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=4F46E5&color=fff" alt="Admin">
+                    <span>Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Section -->
+        <section id="dashboardSection" class="content-section active">
+            <div class="section-header">
+                <h1>Dashboard</h1>
+                <div class="date-display">
+                    <i class="fas fa-calendar"></i>
+                    <span id="currentDate"></span>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card primary">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalCustomers">0</h3>
+                        <p>Total Customers</p>
+                    </div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-icon">
+                        <i class="fas fa-rupee-sign"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalCredit">₹0</h3>
+                        <p>Total Credit</p>
+                    </div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-icon">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalPaid">₹0</h3>
+                        <p>Total Paid</p>
+                    </div>
+                </div>
+                <div class="stat-card danger">
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalPending">₹0</h3>
+                        <p>Pending Balance</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="charts-row">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Top Customers by Credit</h3>
+                        <button class="btn-sm" onclick="refreshDashboard()">
+                            <i class="fas fa-sync"></i>
+                        </button>
+                    </div>
+                    <div class="chart-content" id="topCustomersChart"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Recent Activity</h3>
+                        <select class="filter-select" onchange="filterActivity(this.value)">
+                            <option value="all">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                        </select>
+                    </div>
+                    <div class="activity-list" id="recentActivity"></div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <h3>Quick Actions</h3>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="showSection('customers'); openAddCustomerModal()">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Add Customer</span>
+                    </button>
+                    <button class="action-btn" onclick="showSection('items')">
+                        <i class="fas fa-box-open"></i>
+                        <span>Manage Items</span>
+                    </button>
+                    <button class="action-btn" onclick="exportToExcel()">
+                        <i class="fas fa-file-excel"></i>
+                        <span>Export Report</span>
+                    </button>
+                    <button class="action-btn" onclick="showSection('admin')">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Customers Section -->
+        <section id="customersSection" class="content-section">
+            <div class="section-header">
+                <h1>Customers</h1>
+                <button class="btn-primary" onclick="openAddCustomerModal()">
+                    <i class="fas fa-plus"></i>
+                    Add Customer
+                </button>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters-bar">
+                <div class="filter-group">
+                    <input type="text" placeholder="Search by name or phone..." id="customerSearch" oninput="filterCustomers()">
+                </div>
+                <div class="filter-group">
+                    <select id="statusFilter" onchange="filterCustomers()">
+                        <option value="all">All Status</option>
+                        <option value="pending">Has Pending</option>
+                        <option value="clear">Clear Balance</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <select id="sortFilter" onchange="filterCustomers()">
+                        <option value="name">Sort by Name</option>
+                        <option value="balance-high">Balance (High to Low)</option>
+                        <option value="balance-low">Balance (Low to High)</option>
+                        <option value="recent">Recently Added</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Customers Grid -->
+            <div class="customers-grid" id="customersGrid"></div>
+        </section>
+
+        <!-- Items Section -->
+        <section id="itemsSection" class="content-section">
+            <div class="section-header">
+                <h1>Item Management</h1>
+                <button class="btn-primary" onclick="openAddItemModal()">
+                    <i class="fas fa-plus"></i>
+                    Add Item
+                </button>
+            </div>
+            <div class="items-grid" id="itemsGrid"></div>
+        </section>
+
+        <!-- Transactions Section -->
+        <section id="transactionsSection" class="content-section">
+            <div class="section-header">
+                <h1>Transaction History</h1>
+                <button class="btn-primary" onclick="exportTransactions()">
+                    <i class="fas fa-download"></i>
+                    Export
+                </button>
+            </div>
+            <div class="transactions-table" id="transactionsTable"></div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="adminSection" class="content-section">
+            <div class="section-header">
+                <h1>Settings</h1>
+            </div>
+            <div class="settings-grid">
+                <div class="settings-card">
+                    <h3><i class="fas fa-store"></i> Store Information</h3>
+                    <div class="form-group">
+                        <label>Store Name</label>
+                        <input type="text" id="storeName" value="Balaji Kirana">
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input type="text" id="storeAddress" value="Gandhi nagar akkalkot road solapur">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="text" id="storePhone" value="+91-8975284112">
+                    </div>
+                    <button class="btn-primary" onclick="saveStoreInfo()">Save Changes</button>
+                </div>
+                <div class="settings-card">
+                    <h3><i class="fas fa-database"></i> Data Management</h3>
+                    <button class="btn-secondary" onclick="backupData()">
+                        <i class="fas fa-download"></i> Backup Data
+                    </button>
+                    <label for="restoreFile" class="btn-secondary">
+                        <i class="fas fa-upload"></i> Restore Data
+                    </label>
+                    <input type="file" id="restoreFile" accept=".json" onchange="restoreData(event)" style="display:none">
+                    <button class="btn-danger" onclick="clearAllData()">
+                        <i class="fas fa-trash"></i> Clear All Data
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Add Customer Modal -->
+    <div class="modal" id="addCustomerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Customer</h2>
+                <button class="close-btn" onclick="closeModal('addCustomerModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Customer Name *</label>
+                    <input type="text" id="newCustomerName" placeholder="Enter customer name">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number *</label>
+                    <input type="tel" id="newCustomerPhone" placeholder="Enter phone number">
+                </div>
+                <div class="form-group">
+                    <label>Address (Optional)</label>
+                    <input type="text" id="newCustomerAddress" placeholder="Enter address">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('addCustomerModal')">Cancel</button>
+                <button class="btn-primary" onclick="addCustomer()">Add Customer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Item Modal -->
+    <div class="modal" id="addItemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Item to Customer</h2>
+                <button class="close-btn" onclick="closeModal('addItemModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Select Customer *</label>
+                    <select id="itemCustomerSelect"></select>
+                </div>
+                <div class="form-group">
+                    <label>Select Item *</label>
+                    <select id="itemSelect" onchange="onItemSelect()"></select>
+                </div>
+                <div class="form-group">
+                    <label>Item Name</label>
+                    <input type="text" id="itemName" placeholder="Item name">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Quantity *</label>
+                        <input type="number" id="itemQuantity" placeholder="0" oninput="calculateTotal()">
+                    </div>
+                    <div class="form-group">
+                        <label>Unit</label>
+                        <select id="itemUnit">
+                            <option value="kg">kg</option>
+                            <option value="g">g</option>
+                            <option value="litre">litre</option>
+                            <option value="ml">ml</option>
+                            <option value="piece">piece</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Price per Unit *</label>
+                        <input type="number" id="itemPrice" placeholder="0.00" oninput="calculateTotal()">
+                    </div>
+                    <div class="form-group">
+                        <label>Total</label>
+                        <input type="text" id="itemTotal" readonly placeholder="₹0.00">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('addItemModal')">Cancel</button>
+                <button class="btn-primary" onclick="saveItem()">Add Item</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+    
+<!-- Add these modals to your main-improved.html before closing </body> tag -->
+
+<!-- Payment Modal -->
+<div class="modal" id="paymentModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Record Payment</h2>
+            <button class="close-btn" onclick="closeModal('paymentModal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="customer-summary" style="background: var(--bg-tertiary); padding: 16px; border-radius: var(--radius-sm); margin-bottom: 20px;">
+                <h3 id="paymentCustomerName" style="margin: 0 0 4px 0;"></h3>
+                <p id="paymentCustomerPhone" style="margin: 0; color: var(--text-secondary);"></p>
+                <div style="margin-top: 12px; font-size: 18px;">
+                    <strong>Balance: </strong>
+                    <span id="paymentBalance" style="color: var(--danger); font-weight: 700;"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Payment Amount *</label>
+                <input type="number" id="paymentAmount" placeholder="0.00" step="0.01" min="0">
+            </div>
+
+            <div class="form-group">
+                <label>Note (Optional)</label>
+                <input type="text" id="paymentNote" placeholder="Payment note or reference">
+            </div>
+
+            <div class="form-group">
+                <label>Payment History</label>
+                <div id="paymentHistory" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px;">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeModal('paymentModal')">Cancel</button>
+            <button class="btn-primary" onclick="addPayment()">
+                <i class="fas fa-check"></i> Record Payment
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Customer Detail Modal -->
+<div class="modal" id="customerDetailModal">
+    <div class="modal-content" style="max-width: 900px;">
+        <div class="modal-header">
+            <div>
+                <h2 id="detailCustomerName"></h2>
+                <p id="detailCustomerPhone" style="margin: 4px 0 0 0; color: var(--text-secondary);"></p>
+            </div>
+            <button class="close-btn" onclick="closeModal('customerDetailModal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <!-- Balance Summary -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+                <div style="background: rgba(239, 68, 68, 0.1); padding: 16px; border-radius: var(--radius-sm); text-align: center;">
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Total Credit</div>
+                    <div id="detailTotalCredit" style="font-size: 24px; font-weight: 700; color: var(--danger);"></div>
+                </div>
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 16px; border-radius: var(--radius-sm); text-align: center;">
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Total Paid</div>
+                    <div id="detailTotalPaid" style="font-size: 24px; font-weight: 700; color: var(--success);"></div>
+                </div>
+                <div style="background: rgba(245, 158, 11, 0.1); padding: 16px; border-radius: var(--radius-sm); text-align: center;">
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Balance</div>
+                    <div id="detailBalance" style="font-size: 24px; font-weight: 700; color: var(--warning);"></div>
+                </div>
+            </div>
+
+            <!-- Address -->
+            <div style="background: var(--bg-tertiary); padding: 12px; border-radius: var(--radius-sm); margin-bottom: 24px;">
+                <strong><i class="fas fa-map-marker-alt"></i> Address: </strong>
+                <span id="detailCustomerAddress"></span>
+            </div>
+
+            <!-- Tabs -->
+            <div style="border-bottom: 2px solid var(--border); margin-bottom: 20px;">
+                <button class="tab-btn active" onclick="switchTab('credits')" id="creditsTab" 
+                    style="padding: 12px 24px; border: none; background: none; cursor: pointer; border-bottom: 2px solid var(--primary); font-weight: 600;">
+                    Credit Items
+                </button>
+                <button class="tab-btn" onclick="switchTab('payments')" id="paymentsTab"
+                    style="padding: 12px 24px; border: none; background: none; cursor: pointer; border-bottom: 2px solid transparent; font-weight: 600;">
+                    Payments
+                </button>
+            </div>
+
+            <!-- Credit Items Tab -->
+            <div id="creditsTabContent" class="tab-content">
+                <div id="creditItemsList"></div>
+            </div>
+
+            <!-- Payments Tab -->
+            <div id="paymentsTabContent" class="tab-content" style="display: none;">
+                <div id="detailPaymentsList"></div>
+            </div>
+        </div>
+        <div class="modal-footer" style="justify-content: space-between;">
+            <div style="display: flex; gap: 8px;">
+                <button class="btn-secondary" onclick="exportCustomerDetails(currentCustomerIndex)">
+                    <i class="fas fa-download"></i> Export
+                </button>
+                <button class="btn-secondary" onclick="printReceiptFromDetail()">
+                    <i class="fas fa-print"></i> Print
+                </button>
+                <button class="btn-secondary" onclick="sendReceiptFromDetail()">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </button>
+            </div>
+            <button class="btn-primary" onclick="closeModal('customerDetailModal')">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add New Item Modal -->
+<div class="modal" id="addNewItemModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Add New Item</h2>
+            <button class="close-btn" onclick="closeModal('addNewItemModal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Item Name *</label>
+                <input type="text" id="newItemNameInput" placeholder="Enter item name">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Unit *</label>
+                    <select id="newItemUnitSelect">
+                        <option value="kg">kg</option>
+                        <option value="g">g</option>
+                        <option value="litre">litre</option>
+                        <option value="ml">ml</option>
+                        <option value="piece">piece</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Price *</label>
+                    <input type="number" id="newItemPriceInput" placeholder="0.00" step="0.01" min="0">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeModal('addNewItemModal')">Cancel</button>
+            <button class="btn-primary" onclick="addNewItem()">
+                <i class="fas fa-plus"></i> Add Item
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Item Modal -->
+<div class="modal" id="editItemModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Edit Item</h2>
+            <button class="close-btn" onclick="closeModal('editItemModal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="editItemIndex">
+            <div class="form-group">
+                <label>Item Name *</label>
+                <input type="text" id="editItemNameInput" placeholder="Enter item name">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Unit *</label>
+                    <select id="editItemUnitSelect">
+                        <option value="kg">kg</option>
+                        <option value="g">g</option>
+                        <option value="litre">litre</option>
+                        <option value="ml">ml</option>
+                        <option value="piece">piece</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Price *</label>
+                    <input type="number" id="editItemPriceInput" placeholder="0.00" step="0.01" min="0">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeModal('editItemModal')">Cancel</button>
+            <button class="btn-primary" onclick="saveEditedItem()">
+                <i class="fas fa-save"></i> Save Changes
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Additional Styles for Phase 2 */
+.payment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: var(--bg-primary);
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+}
+
+.payment-info {
+    flex: 1;
+}
+
+.payment-info strong {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 4px;
+    color: var(--success);
+}
+
+.payment-info small {
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.btn-icon-small {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-icon-small:hover {
+    background: var(--danger);
+    color: white;
+}
+
+.tab-btn {
+    color: var(--text-secondary);
+    transition: var(--transition);
+}
+
+.tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary) !important;
+}
+
+.tab-btn:hover {
+    color: var(--text-primary);
+}
+
+.customer-summary h3 {
+    font-size: 18px;
+}
+
+.customer-summary p {
+    font-size: 14px;
+}
+
+/* Responsive modal */
+@media (max-width: 768px) {
+    .modal-content {
+        max-width: 95% !important;
+        margin: 20px auto;
+    }
+}
+</style>
+
+<script>
+// Tab switching function
+function switchTab(tab) {
+    if (tab === 'credits') {
+        document.getElementById('creditsTab').classList.add('active');
+        document.getElementById('paymentsTab').classList.remove('active');
+        document.getElementById('creditsTabContent').style.display = 'block';
+        document.getElementById('paymentsTabContent').style.display = 'none';
+    } else {
+        document.getElementById('creditsTab').classList.remove('active');
+        document.getElementById('paymentsTab').classList.add('active');
+        document.getElementById('creditsTabContent').style.display = 'none';
+        document.getElementById('paymentsTabContent').style.display = 'block';
+    }
+}
+</script>
+
+    <script src="predefine.js"></script>
+    <script src="app-improved.js"></script>
+</body>
+</html>
